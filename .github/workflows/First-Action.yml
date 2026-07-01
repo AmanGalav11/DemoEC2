@@ -1,36 +1,34 @@
-# This is a basic workflow to help you get started with Actions
+name: Secure Workflow Demo
 
-name: First-GitHubActionDemo
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  APP_NAME: "GitHub Actions Demo App"
+  APP_ENV: "development"
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  secure-job:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    permissions:
+      contents: read
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Print normal environment variables
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "App Name: $APP_NAME"
+          echo "App Environment: $APP_ENV"
+
+      - name: Use secret safely
+        env:
+          API_KEY: ${{ secrets.MY_API_KEY }}
+        run: |
+          echo "Secret is available, but we will not print it."
+          echo "This is the safe way to use secrets."
+
+      - name: Simple security reminder
+        run: |
+          echo "Never hardcode passwords in workflow files."
+          echo "Use GitHub Secrets for sensitive values."
